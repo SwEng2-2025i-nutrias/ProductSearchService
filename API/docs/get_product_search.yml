@@ -1,0 +1,106 @@
+get:
+  tags:
+    - Product Search
+  summary: Buscar productos con múltiples filtros
+  description: |
+    Realiza la búsqueda de productos usando filtros opcionales como nombre, precio, cantidad y rango de fechas de cosecha.
+    También permite ordenar por campo y dirección.
+
+  parameters:
+    - name: name
+      in: query
+      required: false
+      description: "Nombre parcial o completo del producto"
+      schema:
+        type: string
+
+    - name: min_price
+      in: query
+      required: false
+      description: "Precio mínimo"
+      schema:
+        type: number
+        format: float
+
+    - name: max_price
+      in: query
+      required: false
+      description: "Precio máximo"
+      schema:
+        type: number
+        format: float
+
+    - name: min_quantity
+      in: query
+      required: false
+      description: "Cantidad mínima"
+      schema:
+        type: integer
+
+    - name: max_quantity
+      in: query
+      required: false
+      description: "Cantidad máxima"
+      schema:
+        type: integer
+
+    - name: harvest_start
+      in: query
+      required: false
+      description: "Fecha de cosecha inicial (ISO format: YYYY-MM-DD)"
+      schema:
+        type: string
+        format: date
+
+    - name: harvest_end
+      in: query
+      required: false
+      description: "Fecha de cosecha final (ISO format: YYYY-MM-DD)"
+      schema:
+        type: string
+        format: date
+
+    - name: order_by
+      in: query
+      required: false
+      description: "Campo por el cual ordenar (name, price_per_unit, quantity, harvest_date)"
+      schema:
+        type: string
+
+    - name: order_dir
+      in: query
+      required: false
+      description: "Dirección del ordenamiento (asc o desc)"
+      schema:
+        type: string
+
+  responses:
+    200:
+      description: Lista de productos obtenida exitosamente
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                name:
+                  type: string
+                farm_id:
+                  type: string
+                type:
+                  type: string
+                quantity:
+                  type: integer
+                price_per_unit:
+                  type: number
+                description:
+                  type: string
+                harvest_date:
+                  type: string
+                  format: date-time
+                created_at:
+                  type: string
+                  format: date-time

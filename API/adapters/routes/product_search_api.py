@@ -11,7 +11,7 @@ product_search_bp = Blueprint(
     "product_search_bp", __name__, url_prefix="/api/v1"
 )
 
-# Inicialización del servicio de búsqueda
+# Inicialización del servicio de búsqueda - Importante, este el es puerto de  ProductServiceAPI
 provider = ProductProviderAPI("http://127.0.0.1:5000")
 search_service = ProductSearchService(product_provider=provider)
 use_case = SearchProductsUseCase(product_search_service=search_service)

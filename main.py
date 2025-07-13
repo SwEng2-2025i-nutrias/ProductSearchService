@@ -15,6 +15,6 @@ if __name__ == "__main__":
     # Ejecutar el servidor
     app.run(
         host='0.0.0.0', 
-        port=int(os.getenv("PORT", 5001)), 
+        port=int(os.getenv("PORT", 5002)), 
         debug=debug_mode
     )

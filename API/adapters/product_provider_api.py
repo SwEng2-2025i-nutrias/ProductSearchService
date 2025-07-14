@@ -27,8 +27,8 @@ class ProductProviderAPI(ProductProviderPort):
             Product(
                 product_id=item.get("product_id"),
                 name=item.get("name"),
+                product_type=item.get("type"),
                 farm_id=item.get("farm_id"),
-                type=item.get("type"),
                 quantity=item.get("quantity"),
                 price_per_unit=item.get("price_per_unit"),
                 description=item.get("description"),

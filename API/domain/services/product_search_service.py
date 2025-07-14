@@ -14,13 +14,12 @@ class ProductSearchService:
 
     def search(self,
                name: Optional[str] = None,
+               product_type: Optional[str] = None,
                min_price: Optional[float] = None,
                max_price: Optional[float] = None,
                min_quantity: Optional[int] = None,
                max_quantity: Optional[int] = None,
-               #falta agregar el filtro 
-               #falta agregar la fecha de cosecha 
-               #
+               type: Optional[str] = None,
                harvest_date_start: Optional[datetime] = None,
                harvest_date_end: Optional[datetime] = None) -> List[Product]:
 
@@ -28,6 +27,9 @@ class ProductSearchService:
 
         if name:
             products = [p for p in products if name.lower() in p.name.lower()]
+
+        if product_type:
+            products = [p for p in products if p.product_type.lower() == product_type.lower()]
 
         if min_price is not None:
             products = [p for p in products if p.price_per_unit >= min_price]
@@ -41,11 +43,16 @@ class ProductSearchService:
         if max_quantity is not None:
             products = [p for p in products if p.quantity <= max_quantity]
 
-        if harvest_date_start is not None:
-            products = [p for p in products if p.harvest_date >= harvest_date_start]
-
-        if harvest_date_end is not None:
-            products = [p for p in products if p.harvest_date <= harvest_date_end]
+        if harvest_date_start:
+            products = [
+                p for p in products
+            if p.harvest_date.date() >= harvest_date_start
+            ]
+        if harvest_date_end:
+            products = [
+            p for p in products
+            if p.harvest_date.date() <= harvest_date_end
+            ]
 
         return products
 

@@ -6,23 +6,18 @@ from API.use_cases.search_use_cases import SearchProductsUseCase
 from API.adapters.product_provider_api import ProductProviderAPI
 from API.domain.services.product_search_service import ProductSearchService
 
-# Blueprint de búsqueda de productos
-product_search_bp = Blueprint(
-    "product_search_bp", __name__, url_prefix="/api/v1"
-)
+product_search_bp = Blueprint("product_search_bp", __name__, url_prefix="/api/v1")
 
-# Inicialización del servicio de búsqueda - Importante, este el es puerto de  ProductServiceAPI
-provider = ProductProviderAPI("http://127.0.0.1:5000")
+# Init dependencies
+provider       = ProductProviderAPI(os.getenv("PRODUCT_SERVICE_URL", "http://127.0.0.1:5000"))
 search_service = ProductSearchService(product_provider=provider)
-use_case = SearchProductsUseCase(product_search_service=search_service)
-
+use_case       = SearchProductsUseCase(product_search_service=search_service)
 
 def parse_date(date_str: str):
     try:
-        return datetime.fromisoformat(date_str) if date_str else None
+        return datetime.fromisoformat(date_str).date() if date_str else None
     except ValueError:
         return None
-
 
 @product_search_bp.route("/product-search", methods=["GET"])
 def search_products():
@@ -37,6 +32,11 @@ def search_products():
         type: string
         required: false
         description: Nombre parcial o completo
+      - name: type
+        in: query
+        type: string
+        required: false
+        description: Tipo de producto
       - name: min_price
         in: query
         type: number
@@ -66,6 +66,17 @@ def search_products():
         type: string
         format: date
         required: false
+        description: Fecha máxima de cosecha (YYYY-MM-DD)
+      - name: order_by
+        in: query
+        type: string
+        required: false
+        description: Campo para ordenar (name, price_per_unit, quantity, harvest_date)
+      - name: order_dir
+        in: query
+        type: string
+        required: false
+        description: Dirección de orden (asc o desc)
     responses:
       200:
         description: Lista de productos filtrados
@@ -90,16 +101,16 @@ def search_products():
                 type: string
               harvest_date:
                 type: string
-                format: date-time
+                format: date
               created_at:
                 type: string
-                format: date-time
+                format: date
     """
-    # Extracción de parámetros
     args = request.args
 
     products = use_case.execute(
         name=args.get("name"),
+        product_type=args.get("type"),
         min_price=float(args.get("min_price")) if args.get("min_price") else None,
         max_price=float(args.get("max_price")) if args.get("max_price") else None,
         min_quantity=int(args.get("min_quantity")) if args.get("min_quantity") else None,
@@ -110,4 +121,6 @@ def search_products():
         order_dir=args.get("order_dir", "asc")
     )
 
-    return jsonify([p.to_dict() for p in products]), 200
+    # Si execute() ya retornó dicts, hacemos directamente:
+    result = [p.to_dict() for p in products]
+    return jsonify(result), 200

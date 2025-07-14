@@ -6,7 +6,7 @@ class Product:
                  product_id: Optional[int], 
                  name: str, 
                  farm_id: str,
-                 type: str,
+                 product_type: str,
                  quantity: int,
                  price_per_unit: float,
                  description: str,
@@ -15,7 +15,7 @@ class Product:
         self.product_id = product_id
         self.name = name
         self.farm_id = farm_id
-        self.type = type
+        self.product_type = product_type
         if quantity >= 0:
             self.quantity = quantity
         else:
@@ -30,7 +30,7 @@ class Product:
             "product_id": self.product_id,
             "name": self.name,
             "farm_id": self.farm_id,
-            "type": self.type,
+            "type": self.product_type,
             "quantity": self.quantity,
             "price_per_unit": self.price_per_unit,
             "description": self.description,

@@ -11,6 +11,7 @@ class SearchProductsUseCase:
 
     def execute(self,
                 name: Optional[str] = None,
+                product_type: Optional[str] = None,
                 min_price: Optional[float] = None,
                 max_price: Optional[float] = None,
                 min_quantity: Optional[int] = None,
@@ -26,6 +27,7 @@ class SearchProductsUseCase:
         # Filtrar productos
         filtered = self.product_search_service.search(
             name=name,
+            product_type=product_type,
             min_price=min_price,
             max_price=max_price,
             min_quantity=min_quantity,

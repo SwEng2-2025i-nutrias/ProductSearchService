@@ -77,6 +77,113 @@ def parse_date(date_str: str):
 
 @product_search_bp.route("/product-search", methods=["GET"])
 def search_products():
+    """
+    Buscar productos con múltiples filtros y ordenamiento.
+    ---
+    tags:
+      - Product Search
+    parameters:
+      - name: name
+        in: query
+        type: string
+        required: false
+        description: Nombre parcial o completo
+      - name: type
+        in: query
+        type: string
+        required: false
+        description: Tipo de producto
+      - name: min_price
+        in: query
+        type: number
+        format: float
+        required: false
+      - name: max_price
+        in: query
+        type: number
+        format: float
+        required: false
+      - name: min_quantity
+        in: query
+        type: integer
+        required: false
+      - name: max_quantity
+        in: query
+        type: integer
+        required: false
+      - name: harvest_start
+        in: query
+        type: string
+        format: date
+        required: false
+        description: Fecha mínima de cosecha (YYYY-MM-DD)
+      - name: harvest_end
+        in: query
+        type: string
+        format: date
+        required: false
+        description: Fecha máxima de cosecha (YYYY-MM-DD)
+      - name: order_by
+        in: query
+        type: string
+        required: false
+        description: Campo para ordenar (name, price_per_unit, quantity, harvest_date)
+      - name: order_dir
+        in: query
+        type: string
+        required: false
+        description: Dirección de orden (asc o desc)
+    responses:
+      200:
+        description: Lista de productos filtrados
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: integer
+              name:
+                type: string
+              farm_id:
+                type: string
+              type:
+                type: string
+              quantity:
+                type: integer
+              price_per_unit:
+                type: number
+              description:
+                type: string
+              harvest_date:
+                type: string
+                format: date
+              created_at:
+                type: string
+                format: date-time
+        examples:
+          application/json:
+            - product_id: 1
+              name: "Maíz amarillo"
+              farm_id: "FARM001"
+              type: "Grano"
+              quantity: 100
+              price_per_unit: 25.5
+              description: "Maíz de alta calidad"
+              harvest_date: "2025-06-01T00:00:00"
+              created_at: "2025-06-10T12:00:00"
+      500:
+        description: Error interno del servidor
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Mensaje de error detallado
+        examples:
+          application/json:
+            error: "Ocurrió un error interno al procesar la solicitud"
+    """
     args = request.args
 
     products = use_case.execute(

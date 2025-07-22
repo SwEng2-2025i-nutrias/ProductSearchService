@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from flask import Blueprint, request, jsonify, Response
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from flasgger import swag_from
 
 from API.use_cases.search_use_cases import SearchProductsUseCase
 from API.adapters.product_provider_api import ProductProviderAPI
@@ -57,9 +58,29 @@ def after_request(response):
             FILTER_USAGE.labels(filter=filtro).inc()
 
     return response
+
 # Añadimos /metrics aquí si quieres exponerlas también bajo /api/v1/metrics
 @product_search_bp.route("/metrics", methods=["GET"])
 def metrics_bp():
+    """
+    Endpoint para métricas de Prometheus
+    ---
+    tags:
+      - Monitoring
+    summary: Obtener métricas de Prometheus
+    description: Retorna las métricas de la aplicación en formato Prometheus
+    responses:
+      200:
+        description: Métricas en formato Prometheus
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: |
+                # HELP product_filter_requests_total Total de solicitudes al endpoint de filtrado
+                # TYPE product_filter_requests_total counter
+                product_filter_requests_total{endpoint="/api/v1/product-search",http_status="200",method="GET"} 5.0
+    """
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 # --- Resto de tu código de rutas ---
@@ -76,7 +97,11 @@ def parse_date(date_str: str):
         return None
 
 @product_search_bp.route("/product-search", methods=["GET"])
+@swag_from('../../docs/get_product_search.yml')
 def search_products():
+    """
+    Buscar productos con múltiples filtros
+    """
     args = request.args
 
     products = use_case.execute(

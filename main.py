@@ -1,7 +1,5 @@
 import os
 from dotenv import load_dotenv
-from flask import Response
-from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from API.app.factory import create_app
 
@@ -9,13 +7,12 @@ from API.app.factory import create_app
 load_dotenv()
 
 if __name__ == "__main__":
-    # Crear la aplicación
+    # Crear la aplicación (ya incluye prometheus-flask-exporter)
     app = create_app()
 
-    # Exponer endpoint /metrics en la raíz
-    @app.route("/metrics")
-    def metrics():
-        return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+    print("=== Endpoints registrados ===")
+    for rule in app.url_map.iter_rules():
+        print(f"{rule.endpoint:30s} {rule.methods} {rule.rule}")
 
     # Configurar modo debug
     debug_mode = os.getenv("FLASK_DEBUG", "False").lower() == "true"
@@ -24,5 +21,5 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(os.getenv("PORT", 5002)),
-        debug=debug_mode
+        debug=False  # Prometheus metrics need debug=False
     )

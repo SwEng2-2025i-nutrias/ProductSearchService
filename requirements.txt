@@ -32,6 +32,7 @@ packaging==25.0
 pillow==11.3.0
 pluggy==1.6.0
 prometheus_client==0.22.1
+prometheus-flask-exporter==0.23.2
 psycopg2-binary==2.9.10
 pycparser==2.22
 Pygments==2.19.2

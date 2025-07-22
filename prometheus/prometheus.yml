@@ -1,31 +1,39 @@
-# ========================
-# GLOBAL CONFIGURATION
-# ========================
 global:
-  scrape_interval: 15s # Cada cuánto hace scrape
-  evaluation_interval: 15s # Cada cuánto evalúa alertas
+  scrape_interval: 15s # Frecuencia con la que Prometheus recolecta métricas
+  evaluation_interval: 15s # Frecuencia con la que se evalúan reglas (si usas alertas)
 
-# ========================
-# ALERTMANAGER CONFIG
-# ========================
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets: ["localhost:9093"]
-
-# ========================
-# ALERTING RULE FILES
-# ========================
 rule_files:
-  - "alert_rules.yml"
+  # - "first_rules.yml"
+  # - "second_rules.yml"
 
-# ========================
-# SCRAPE CONFIGS
-# ========================
+# Lista de endpoints que Prometheus monitoreará
 scrape_configs:
-  # 1) Tu API Flask instrumentada
-  - job_name: flask_api
-    metrics_path: /metrics # <-- solo la ruta
-    scheme: http # opcional (por defecto es http)
+  # Configuración para el servicio de búsqueda de productos Flask (interno)
+  - job_name: 'product-search-service'
     static_configs:
-      - targets: ["localhost:5002"]
+      - targets: ['product-search-service:5002']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 10s
+
+  # Configuración para el servicio de autenticación Flask (externo)
+  - job_name: 'authentication-service'
+    static_configs:
+      - targets: ['host.docker.internal:5001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 10s
+
+  # Configuración para el servicio de productos Flask (externo)
+  - job_name: 'product-service'
+    static_configs:
+      - targets: ['host.docker.internal:5000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 10s
+
+  # Configuración para Prometheus mismo
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+

@@ -1,10 +1,18 @@
 from flask import Flask, redirect, url_for
 from flasgger import Swagger
+from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 from API.adapters.routes.product_search_api import product_search_bp
 
 def create_app():
     app = Flask(__name__)
+    
+    # Configurar CORS
+    CORS(app, resources={r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }})
     
     # Configuración completa de Swagger
     swagger_config = {

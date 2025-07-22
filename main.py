@@ -3,6 +3,8 @@ import sys
 from dotenv import load_dotenv
 from flask import jsonify
 from waitress import serve
+from flask import Response
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 try:
     from API.app.factory import create_app
@@ -22,10 +24,19 @@ try:
         "allow_headers": ["Content-Type", "Authorization"]
     }})
 
+    
+        # Exponer endpoint /metrics en la raíz
+    @app.route("/metrics")
+    def metrics():
+        return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+    
     @app.route('/health', methods=['GET'])
     def health_check():
         return jsonify({"status": "ok"}), 200
 
+    #  # Configurar modo debug
+    # debug_mode = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    
     port = int(os.getenv("PORT", 5002))
     serve(app, host='0.0.0.0', port=port)
 

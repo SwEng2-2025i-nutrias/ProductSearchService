@@ -1,0 +1,31 @@
+# ========================
+# GLOBAL CONFIGURATION
+# ========================
+global:
+  scrape_interval: 15s # Cada cuánto hace scrape
+  evaluation_interval: 15s # Cada cuánto evalúa alertas
+
+# ========================
+# ALERTMANAGER CONFIG
+# ========================
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["localhost:9093"]
+
+# ========================
+# ALERTING RULE FILES
+# ========================
+rule_files:
+  - "alert_rules.yml"
+
+# ========================
+# SCRAPE CONFIGS
+# ========================
+scrape_configs:
+  # 1) Tu API Flask instrumentada
+  - job_name: flask_api
+    metrics_path: /metrics # <-- solo la ruta
+    scheme: http # opcional (por defecto es http)
+    static_configs:
+      - targets: ["localhost:5002"]
